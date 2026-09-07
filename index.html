@@ -76,16 +76,16 @@
   </div>
   <script>
     const rank=document.getElementById('rank'),road=document.getElementById('roadname'),vest=document.getElementById('vestImage');
-    const hp=document.getElementById('honoraryPatch'),fp=document.getElementById('founderPatch'),hf=document.getElementById('honoraryField');
+    const hp=document.getElementById('honoraryPatch'),fp=document.getElementById('founderPatch'),rp=document.getElementById('rankPatch'),hf=document.getElementById('honoraryField');
     const ht=document.getElementById('honoraryToggle'),ft=document.getElementById('founderToggle'),type=document.getElementById('honoraryType');
     function setToggle(button,element,status,extra){const on=button.classList.toggle('on');button.setAttribute('aria-checked',on);element.classList.toggle('hidden',!on);document.getElementById(status).textContent=on?'Visible':'Hidden';if(extra)extra.classList.toggle('hidden',!on)}
     // Best-fits a patch's text to its own box by binary-searching the largest
     // font-size that doesn't overflow -- a fixed size can't serve Honorary
     // well since its text swaps between "HONORARY" and the much wider "MOST
     // HONORARY", and any fixed size is only ever tuned for one viewport width.
-    function fitPatchFont(el,max=22,min=7){let lo=min,hi=max;for(let i=0;i<16;i++){const mid=(lo+hi)/2;el.style.fontSize=mid+'px';if(el.scrollWidth<=el.clientWidth)lo=mid;else hi=mid}el.style.fontSize=lo+'px'}
-    function refitPatches(){fitPatchFont(fp);fitPatchFont(hp)}
-    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';document.getElementById('rankPatch').textContent=value.toUpperCase();document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png':'vest-standard.png';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
+    function fitPatchFont(el,max=22,min=6){let lo=min,hi=max;for(let i=0;i<16;i++){const mid=(lo+hi)/2;el.style.fontSize=mid+'px';if(el.scrollWidth<=el.clientWidth)lo=mid;else hi=mid}el.style.fontSize=lo+'px'}
+    function refitPatches(){fitPatchFont(fp);fitPatchFont(hp);fitPatchFont(rp)}
+    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';rp.textContent=value.toUpperCase();fitPatchFont(rp);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png':'vest-standard.png';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
     rank.addEventListener('change',updateRank);
     road.addEventListener('input',()=>{road.value=road.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,10);document.getElementById('roadPatch').textContent=road.value||'ROAD NAME';document.getElementById('count').textContent=road.value.length+'/10'});
     type.addEventListener('change',()=>{hp.textContent=type.value.toUpperCase();fitPatchFont(hp)});
