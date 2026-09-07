@@ -119,9 +119,21 @@
       ctx.fillStyle=grad;ctx.fill();
       ctx.strokeStyle='#e5e8ec';ctx.lineWidth=Math.max(1,2*scale);ctx.stroke();
     }
-    function exportVestJPEG(){
+    // The back panel carries no configurable patches -- it's the club's
+    // fixed identity, same across every rank/roadname -- so it's just
+    // loaded once and drawn as-is beside the rendered front.
+    let backImgCache=null;
+    function loadBackImage(){
+      return new Promise((resolve,reject)=>{
+        if(backImgCache&&backImgCache.complete&&backImgCache.naturalWidth){resolve(backImgCache);return}
+        const im=new Image();
+        im.onload=()=>{backImgCache=im;resolve(im)};
+        im.onerror=reject;
+        im.src='vest-back.png';
+      });
+    }
+    function renderFrontVest(){
       const vestEl=document.querySelector('.vest'),img=vest;
-      if(!img.complete||!img.naturalWidth)return;
       const vestRect=vestEl.getBoundingClientRect();
       const scale=img.naturalWidth/vestRect.width;
       const canvas=document.createElement('canvas');
@@ -157,8 +169,24 @@
         ctx.fillText('XL',x+w/2,y+h*.85);
         ctx.restore();
       }
+      return canvas;
+    }
+    async function exportVestJPEG(){
+      if(!vest.complete||!vest.naturalWidth)return;
+      const frontCanvas=renderFrontVest();
+      let backImg=null;
+      try{backImg=await loadBackImage()}catch(e){/* export front alone if the back photo can't load */}
+      const gap=Math.round(frontCanvas.height*0.02);
+      const backW=backImg?Math.round(backImg.naturalWidth*(frontCanvas.height/backImg.naturalHeight)):0;
+      const combined=document.createElement('canvas');
+      combined.width=frontCanvas.width+(backImg?gap+backW:0);
+      combined.height=frontCanvas.height;
+      const ctx=combined.getContext('2d');
+      ctx.fillStyle='#08090b';ctx.fillRect(0,0,combined.width,combined.height);
+      ctx.drawImage(frontCanvas,0,0);
+      if(backImg)ctx.drawImage(backImg,frontCanvas.width+gap,0,backW,frontCanvas.height);
       const filename=`${slug(road.value)}-${slug(rank.value)}.jpg`;
-      canvas.toBlob(blob=>saveFile(filename,blob),'image/jpeg',0.92);
+      combined.toBlob(blob=>saveFile(filename,blob),'image/jpeg',0.92);
     }
     // Plain anchor+blob-URL downloads are inert inside a sandboxed artifact
     // viewer, which instead mediates file saves through the `downloads`
