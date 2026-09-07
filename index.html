@@ -153,11 +153,23 @@
         ctx.restore();
       }
       const filename=`${slug(road.value)}-${slug(rank.value)}.jpg`;
-      canvas.toBlob(blob=>{
-        const url=URL.createObjectURL(blob),a=document.createElement('a');
-        a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
-        setTimeout(()=>URL.revokeObjectURL(url),4000);
-      },'image/jpeg',0.92);
+      canvas.toBlob(blob=>saveFile(filename,blob),'image/jpeg',0.92);
+    }
+    // Plain anchor+blob-URL downloads are inert inside a sandboxed artifact
+    // viewer, which instead mediates file saves through the `downloads`
+    // capability -- try that first, and only fall back to the classic
+    // anchor click where window.claude doesn't exist at all (e.g. the real
+    // GitHub Pages deployment of this page).
+    async function saveFile(filename,blob){
+      if(window.claude&&window.claude.use){
+        try{
+          const downloads=await window.claude.use('downloads');
+          if(downloads){await downloads.save({filename,data:blob});return}
+        }catch(e){return}
+      }
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),4000);
     }
     document.getElementById('downloadBtn').addEventListener('click',exportVestJPEG);
   </script>
