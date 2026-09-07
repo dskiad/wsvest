@@ -86,14 +86,19 @@
     // font-size that doesn't overflow -- a fixed size can't serve Honorary
     // well since its text swaps between "HONORARY" and the much wider "MOST
     // HONORARY", and any fixed size is only ever tuned for one viewport width.
-    function fitPatchFont(el,max=22,min=6){let lo=min,hi=max;for(let i=0;i<16;i++){const mid=(lo+hi)/2;el.style.fontSize=mid+'px';if(el.scrollWidth<=el.clientWidth)lo=mid;else hi=mid}el.style.fontSize=lo+'px'}
-    function refitPatches(){fitPatchFont(fp);fitPatchFont(hp);fitPatchFont(rp);fitPatchFont(rop)}
+    function fitPatchFont(el,max=22,min=6){if(!el.clientWidth)return;let lo=min,hi=max;for(let i=0;i<16;i++){const mid=(lo+hi)/2;el.style.fontSize=mid+'px';if(el.scrollWidth<=el.clientWidth)lo=mid;else hi=mid}el.style.fontSize=lo+'px'}
+    // Road and Founder are kept at one shared size (the smaller of their
+    // two independent best-fits) rather than each filling its own box --
+    // fitted separately they'd rarely match, since font-size that fills a
+    // box depends on that patch's own text length.
+    function matchPatchFonts(a,b){fitPatchFont(a);fitPatchFont(b);if(!a.clientWidth||!b.clientWidth)return;const size=Math.min(parseFloat(a.style.fontSize),parseFloat(b.style.fontSize));a.style.fontSize=size+'px';b.style.fontSize=size+'px'}
+    function refitPatches(){fitPatchFont(hp);fitPatchFont(rp);matchPatchFonts(fp,rop)}
     function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';rp.textContent=value.toUpperCase();fitPatchFont(rp);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png':'vest-standard.png';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
     rank.addEventListener('change',updateRank);
-    road.addEventListener('input',()=>{road.value=road.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,10);rop.textContent=road.value||'ROAD NAME';fitPatchFont(rop);document.getElementById('count').textContent=road.value.length+'/10'});
+    road.addEventListener('input',()=>{road.value=road.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,10);rop.textContent=road.value||'ROAD NAME';matchPatchFonts(fp,rop);document.getElementById('count').textContent=road.value.length+'/10'});
     type.addEventListener('change',()=>{hp.textContent=type.value.toUpperCase();fitPatchFont(hp)});
     ht.addEventListener('click',()=>setToggle(ht,hp,'honoraryStatus',hf));
-    ft.addEventListener('click',()=>setToggle(ft,fp,'founderStatus'));
+    ft.addEventListener('click',()=>{setToggle(ft,fp,'founderStatus');fp.classList.contains('hidden')?fitPatchFont(rop):matchPatchFonts(fp,rop)});
     window.addEventListener('resize',refitPatches);
     refitPatches();
 
