@@ -81,6 +81,25 @@
     const rank=document.getElementById('rank'),road=document.getElementById('roadname'),vest=document.getElementById('vestImage');
     const hp=document.getElementById('honoraryPatch'),fp=document.getElementById('founderPatch'),rp=document.getElementById('rankPatch'),rop=document.getElementById('roadPatch'),hf=document.getElementById('honoraryField');
     const ht=document.getElementById('honoraryToggle'),ft=document.getElementById('founderToggle'),type=document.getElementById('honoraryType');
+    // Started immediately at load, not inside the click handler: a sandboxed
+    // artifact viewer's save prompt has to be traceable back to the click
+    // that asked for it, and by the time a fresh `claude.use('downloads')`
+    // call and a first-time 2-3MB back-photo fetch both finished, the click
+    // that triggered them was long over -- the platform then had nothing
+    // to visibly tie the save to, and silently dropped it. Pre-warming both
+    // here means the click handler only ever awaits already-settled promises.
+    const downloadsCapability=(window.claude&&window.claude.use)?window.claude.use('downloads').catch(()=>null):Promise.resolve(null);
+    let backImgCache=null;
+    function loadBackImage(){
+      return new Promise((resolve,reject)=>{
+        if(backImgCache&&backImgCache.complete&&backImgCache.naturalWidth){resolve(backImgCache);return}
+        const im=new Image();
+        im.onload=()=>{backImgCache=im;resolve(im)};
+        im.onerror=reject;
+        im.src='vest-back.png';
+      });
+    }
+    loadBackImage().catch(()=>{});
     function setToggle(button,element,status,extra){const on=button.classList.toggle('on');button.setAttribute('aria-checked',on);element.classList.toggle('hidden',!on);document.getElementById(status).textContent=on?'Visible':'Hidden';if(extra)extra.classList.toggle('hidden',!on)}
     // Best-fits a patch's text to its own box by binary-searching the largest
     // font-size that doesn't overflow -- a fixed size can't serve Honorary
@@ -121,17 +140,7 @@
     }
     // The back panel carries no configurable patches -- it's the club's
     // fixed identity, same across every rank/roadname -- so it's just
-    // loaded once and drawn as-is beside the rendered front.
-    let backImgCache=null;
-    function loadBackImage(){
-      return new Promise((resolve,reject)=>{
-        if(backImgCache&&backImgCache.complete&&backImgCache.naturalWidth){resolve(backImgCache);return}
-        const im=new Image();
-        im.onload=()=>{backImgCache=im;resolve(im)};
-        im.onerror=reject;
-        im.src='vest-back.png';
-      });
-    }
+    // loaded once (pre-warmed above) and drawn as-is beside the front.
     function renderFrontVest(){
       const vestEl=document.querySelector('.vest'),img=vest;
       const vestRect=vestEl.getBoundingClientRect();
@@ -186,19 +195,29 @@
       ctx.drawImage(frontCanvas,0,0);
       if(backImg)ctx.drawImage(backImg,frontCanvas.width+gap,0,backW,frontCanvas.height);
       const filename=`${slug(road.value)}-${slug(rank.value)}.jpg`;
-      combined.toBlob(blob=>saveFile(filename,blob),'image/jpeg',0.92);
+      // toDataURL is synchronous (unlike toBlob's callback), keeping the
+      // whole chain from click to downloads.save() in the same tick.
+      saveFile(filename,dataURLToBlob(combined.toDataURL('image/jpeg',0.92)));
+    }
+    function dataURLToBlob(dataUrl){
+      const[header,base64]=dataUrl.split(',');
+      const mime=header.match(/:(.*?);/)[1];
+      const bin=atob(base64);
+      const bytes=new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+      return new Blob([bytes],{type:mime});
     }
     // Plain anchor+blob-URL downloads are inert inside a sandboxed artifact
     // viewer, which instead mediates file saves through the `downloads`
-    // capability -- try that first, and only fall back to the classic
-    // anchor click where window.claude doesn't exist at all (e.g. the real
-    // GitHub Pages deployment of this page).
+    // capability -- try that first (already resolved by downloadsCapability,
+    // pre-warmed at load), and only fall back to the classic anchor click
+    // where window.claude doesn't exist at all (e.g. the real GitHub Pages
+    // deployment of this page).
     async function saveFile(filename,blob){
-      if(window.claude&&window.claude.use){
-        try{
-          const downloads=await window.claude.use('downloads');
-          if(downloads){await downloads.save({filename,data:blob});return}
-        }catch(e){return}
+      const downloads=await downloadsCapability;
+      if(downloads){
+        try{await downloads.save({filename,data:blob})}catch(e){}
+        return;
       }
       const url=URL.createObjectURL(blob),a=document.createElement('a');
       a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
