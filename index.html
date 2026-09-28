@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Widows Sons Vest Configurator</title>
-  <meta name="description" content="Configure the Chapter Hellas vest rank, Roadname, Honorary and Founder patches.">
+  <meta name="description" content="Configure the Hellas Chapter vest rank, Roadname, Honorary and Founder patches.">
   <style>
     :root{color-scheme:dark;--silver:#e7e9ed;--line:#363b44;--muted:#989fa9}
     *{box-sizing:border-box}
@@ -12,7 +12,7 @@
     .app{min-height:100vh;display:grid;grid-template-columns:minmax(300px,360px) 1fr}
     aside{padding:28px;background:linear-gradient(155deg,#181a20,#0b0c0f 70%);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:20px;box-shadow:24px 0 70px #0008;z-index:2}
     .brand{display:flex;align-items:center;gap:14px}
-    .seal{width:54px;height:54px;border:2px solid #d6dae0;border-radius:50%;display:grid;place-items:center;font:bold 19px Georgia;background:radial-gradient(circle at 35% 25%,#525862,#101216 64%);box-shadow:0 0 0 5px #fff1}
+    .seal{width:64px;height:64px;flex:none;display:block;object-fit:contain;filter:drop-shadow(0 3px 5px #000a)}
     .eyebrow{margin:0 0 4px;color:#aeb4bd;font-size:12px;font-weight:800;letter-spacing:.2em}
     h1,h2{margin:0;font-family:Georgia,serif;font-weight:500} h1{font-size:28px} h2{font-size:27px}
     .field{display:grid;gap:10px}.field label,.toggle label{font-size:19px;font-weight:900;letter-spacing:.045em;line-height:1.2;color:#eef2f7;text-shadow:0 1px 0 #fff,0 2px 5px rgba(185,196,211,.35)}
@@ -63,7 +63,7 @@
 <body>
   <div class="app">
     <aside>
-      <div class="brand"><div class="seal">WS</div><div><p class="eyebrow">CHAPTER HELLAS</p><h1>Vest Configurator</h1></div></div>
+      <div class="brand"><img class="seal" src="seal-wax.webp?v=1" alt="The seal of Hellas Chapter in red wax"><div><p class="eyebrow">HELLAS CHAPTER</p><h1>Vest Configurator</h1></div></div>
       <div class="field">
         <label for="rank">Office Rank</label>
         <select id="rank"></select>
@@ -98,7 +98,7 @@
     <main>
       <header><div><p class="eyebrow">LIVE PREVIEW</p><h2 id="heading">President</h2></div><div class="badge active" id="trimBadge">Silver trim</div></header>
       <div class="stage"><div class="vest">
-        <img id="vestImage" src="vest-silver.png?v=g1" alt="Widows Sons Chapter Hellas leather vest">
+        <img id="vestImage" src="vest-silver.png?v=g1" alt="Widows Sons Hellas Chapter leather vest">
         <div class="size" id="sizeTag">SIZE<strong>XL</strong></div>
         <div class="patch rank" id="rankPatch">PRESIDENT</div>
         <div class="patch road" id="roadPatch">BUILDSMITH</div>
