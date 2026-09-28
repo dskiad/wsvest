@@ -96,7 +96,7 @@
     <main>
       <header><div><p class="eyebrow">LIVE PREVIEW</p><h2 id="heading">President</h2></div><div class="badge active" id="trimBadge">Silver trim</div></header>
       <div class="stage"><div class="vest">
-        <img id="vestImage" src="vest-silver.png" alt="Widows Sons Chapter Hellas leather vest">
+        <img id="vestImage" src="vest-silver.png?v=zip1" alt="Widows Sons Chapter Hellas leather vest">
         <div class="size" id="sizeTag">SIZE<strong>XL</strong></div>
         <div class="patch rank" id="rankPatch">PRESIDENT</div>
         <div class="patch road" id="roadPatch">BUILDSMITH</div>
@@ -200,7 +200,7 @@
     // box depends on that patch's own text length.
     function matchPatchFonts(a,b){fitPatchFont(a);fitPatchFont(b);if(!a.clientWidth||!b.clientWidth)return;const size=Math.min(parseFloat(a.style.fontSize),parseFloat(b.style.fontSize));a.style.fontSize=size+'px';b.style.fontSize=size+'px'}
     function refitPatches(){fitPatchFont(hp);fitPatchFont(rp);matchPatchFonts(fp,rop);stackLeft()}
-    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';rp.textContent=value.toUpperCase();fitPatchFont(rp);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png':'vest-standard.png';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
+    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';rp.textContent=value.toUpperCase();fitPatchFont(rp);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=zip1':'vest-standard.png?v=zip1';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
     rank.addEventListener('change',updateRank);
     road.addEventListener('input',()=>{road.value=road.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,10);rop.textContent=road.value||'ROAD NAME';matchPatchFonts(fp,rop);document.getElementById('count').textContent=road.value.length+'/10'});
     type.addEventListener('change',()=>{hp.textContent=type.value.toUpperCase();fitPatchFont(hp)});
