@@ -88,15 +88,15 @@
         <p>PATCH NUMBERS</p>
         <ol>
           <li>National flag</li><li>Office rank</li><li>Roadname</li><li>Founder</li><li>Honorary</li>
-          <li>Chapter roundel</li><li>Top rocker (small)</li><li>Centre oval (small)</li><li>Bottom rocker (small)</li><li>Size tag</li>
+          <li value="7">Top rocker &mdash; WIDOWS SONS</li><li>Centre oval (small)</li><li>Bottom rocker &mdash; HELLAS CHAPTER</li><li>Size tag</li>
         </ol>
       </div>
-      <div class="specs"><div><span>Flag</span><strong>11 × 6 cm</strong></div><div><span>Name patches</span><strong>11 × 3 cm</strong></div><div><span>Front emblem</span><strong>8.2 × 8.2 cm</strong></div><div><span>Seal patch</span><strong>7 cm ⌀</strong></div><div><span>Vest size</span><strong>XL · 58 cm</strong></div></div>
+      <div class="specs"><div><span>Flag</span><strong>11 × 6 cm</strong></div><div><span>Name patches</span><strong>11 × 3 cm</strong></div><div><span>Front emblem</span><strong>8.2 × 8.2 cm</strong></div><div><span>Vest size</span><strong>XL · 58 cm</strong></div></div>
     </aside>
     <main>
       <header><div><p class="eyebrow">LIVE PREVIEW</p><h2 id="heading">President</h2></div><div class="badge active" id="trimBadge">Silver trim</div></header>
       <div class="stage"><div class="vest">
-        <img id="vestImage" src="vest-silver.png?v=zip1" alt="Widows Sons Chapter Hellas leather vest">
+        <img id="vestImage" src="vest-silver.png?v=hc1" alt="Widows Sons Chapter Hellas leather vest">
         <div class="size" id="sizeTag">SIZE<strong>XL</strong></div>
         <div class="patch rank" id="rankPatch">PRESIDENT</div>
         <div class="patch road" id="roadPatch">BUILDSMITH</div>
@@ -167,7 +167,8 @@
     const PNO=[
       {n:1,at:[.203,.268]},                 // national flag
       {n:2,el:'rankPatch'},{n:3,el:'roadPatch'},{n:4,el:'founderPatch'},{n:5,el:'honoraryPatch'},
-      {n:6,at:[.661,.143]},                 // Chapter roundel
+      // n.6, the Chapter roundel, is taken off the vest; its number is kept free
+      // so the numbers after it do not move.
       {n:7,at:[.639,.277]},                 // top rocker (small)
       {n:8,at:[.654,.318]},                 // centre oval (small)
       {n:9,at:[.640,.376]},                 // bottom rocker (small)
@@ -200,7 +201,7 @@
     // box depends on that patch's own text length.
     function matchPatchFonts(a,b){fitPatchFont(a);fitPatchFont(b);if(!a.clientWidth||!b.clientWidth)return;const size=Math.min(parseFloat(a.style.fontSize),parseFloat(b.style.fontSize));a.style.fontSize=size+'px';b.style.fontSize=size+'px'}
     function refitPatches(){fitPatchFont(hp);fitPatchFont(rp);matchPatchFonts(fp,rop);stackLeft()}
-    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';rp.textContent=value.toUpperCase();fitPatchFont(rp);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=zip1':'vest-standard.png?v=zip1';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
+    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';rp.textContent=value.toUpperCase();fitPatchFont(rp);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=hc1':'vest-standard.png?v=hc1';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
     rank.addEventListener('change',updateRank);
     road.addEventListener('input',()=>{road.value=road.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,10);rop.textContent=road.value||'ROAD NAME';matchPatchFonts(fp,rop);document.getElementById('count').textContent=road.value.length+'/10'});
     type.addEventListener('change',()=>{hp.textContent=type.value.toUpperCase();fitPatchFont(hp)});
