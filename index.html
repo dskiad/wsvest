@@ -93,12 +93,12 @@
           <li value="7">Front colours &mdash; WIDOWS SONS &middot; oval &middot; HELLAS CHAPTER</li><li value="10">Size tag</li>
         </ol>
       </div>
-      <div class="specs"><div><span>Flag</span><strong>11 × 6 cm</strong></div><div><span>Name patches</span><strong>11 × 3 cm</strong></div><div><span>Front colours</span><strong>9.5 × 9.5 cm</strong></div><div><span>Vest size</span><strong>XL · 58 cm</strong></div></div>
+      <div class="specs"><div><span>Flag</span><strong>11 × 6 cm</strong></div><div><span>Name patches</span><strong>11 × 3 cm</strong></div><div><span>Front colours</span><strong>10 × 10.5 cm</strong></div><div><span>Vest size</span><strong>XL · 58 cm</strong></div></div>
     </aside>
     <main>
       <header><div><p class="eyebrow">LIVE PREVIEW</p><h2 id="heading">President</h2></div><div class="badge active" id="trimBadge">Silver trim</div></header>
       <div class="stage"><div class="vest">
-        <img id="vestImage" src="vest-silver.png?v=g1" alt="Widows Sons Hellas Chapter leather vest">
+        <img id="vestImage" src="vest-silver.png?v=p10" alt="Widows Sons Hellas Chapter leather vest">
         <div class="size" id="sizeTag">SIZE<strong>XL</strong></div>
         <div class="patch rank" id="rankPatch">PRESIDENT</div>
         <div class="patch road" id="roadPatch">BUILDSMITH</div>
@@ -173,7 +173,7 @@
       {n:2,el:'rankPatch'},{n:3,el:'roadPatch'},{n:4,el:'founderPatch'},{n:5,el:'honoraryPatch'},
       // n.6, the Chapter roundel, is taken off the vest; its number is kept free
       // so the numbers after it do not move.
-      {n:7,at:[.644,.278]},                 // front colours, one patch 9.5 x 9.5 cm
+      {n:7,at:[.636,.271]},                 // front colours, one patch 10 x 10.5 cm
       // 8 and 9 (the small oval and bottom rocker) are now part of n.7
       {n:10,el:'sizeTag'}
     ];
@@ -234,7 +234,7 @@
       el.style.fontSize=best.size.toFixed(2)+'px';
     }
     function refitPatches(){fitPatchFont(hp);fitRank(rp,rank.value);matchPatchFonts(fp,rop);stackLeft()}
-    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';fitRank(rp,value);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=g1':'vest-standard.png?v=g1';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
+    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';fitRank(rp,value);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=p10':'vest-standard.png?v=p10';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
     rank.addEventListener('change',updateRank);
     road.addEventListener('input',()=>{road.value=road.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,10);rop.textContent=road.value||'ROAD NAME';matchPatchFonts(fp,rop);document.getElementById('count').textContent=road.value.length+'/10'});
     type.addEventListener('change',()=>{hp.textContent=type.value.toUpperCase();fitPatchFont(hp)});
