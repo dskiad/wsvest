@@ -136,32 +136,29 @@
     const garageReady=new Promise(res=>{const g=new Image();g.onload=()=>{garageImg=g;res(g)};g.onerror=()=>res(null);g.src='ride-bg.jpg?v=r1'});
 
     // ---- Office Rank list -------------------------------------------------
-    // The offices are the Chapter's, not this page's: they are read from the
-    // officers section (Section 04) of the Chapter site, which follows the
-    // By-Laws, so a change of office there reaches this list on the next
-    // load with no edit here. The list below is only the fallback for when
-    // the site cannot be reached; keep it equal to Section 04.
-    // Grand Master is a standing (Most Honorary), not an office, and Member is
-    // the brother who holds none -- both are added after the offices.
-    const OFFICES_SOURCE='https://nglg-gsec.github.io/WSHellas/index.html';
-    const OFFICES_FALLBACK=['President','Vice President','Secretary','Treasurer','Sergeant-at-Arms','Road Captain','Road Sergeant','Warden','Orator','Ambassador','Almoner','Quartermaster','Master of Ceremonies','Preparing Brother','Event Manager'];
-    const STANDINGS=['Grand Master','Member'];
-    function fillRanks(offices,fromSite){
+    // The ranks are the Chapter's, not this page's. They come from WSRanks,
+    // the ONE list every rank drop-down of the Chapter shares (the Register on
+    // the Secretary's page reads the same file):
+    //   https://nglg-gsec.github.io/WSHellas/assets/ws-ranks.js
+    // Change a rank there and this list follows on the next load. The copy
+    // below is used only if that file cannot be reached, and is marked so.
+    const RANKS_SOURCE='https://nglg-gsec.github.io/WSHellas/assets/ws-ranks.js';
+    const RANKS_FALLBACK=['President','Vice President','Secretary','Treasurer','Sergeant-at-Arms','Road Captain','Road Sergeant','Warden','Orator','Ambassador','Almoner','Quartermaster','Master of Ceremonies','Preparing Brother','Event Manager','Grand Master','Member'];
+    function fillRanks(list,fromSite){
       const keep=rank.value||'President';
-      const list=[...offices.filter(o=>!STANDINGS.includes(o)),...STANDINGS];
+      list=[...new Set(list)];                       // unique, always
       rank.innerHTML='';
       list.forEach(o=>{const opt=document.createElement('option');opt.textContent=o;rank.appendChild(opt)});
       rank.value=list.includes(keep)?keep:list[0];
+      const offices=fromSite?window.WSRanks.offices().length:15;
       document.getElementById('rankSource').textContent=fromSite
-        ?`${offices.length} offices, read live from the Chapter site (By-Laws).`
-        :`${offices.length} offices as the By-Laws name them (site not reached).`;
+        ?`${offices} offices, Grand Master and Member — the Chapter's one rank list.`
+        :`${offices} offices, Grand Master and Member (Chapter list not reached — local copy).`;
     }
-    fillRanks(OFFICES_FALLBACK,false);
-    fetch(OFFICES_SOURCE,{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.text()}).then(html=>{
-      const doc=new DOMParser().parseFromString(html,'text/html');
-      const offices=[...doc.querySelectorAll('#administration .ws-office-en')].map(e=>e.textContent.trim()).filter(Boolean);
-      if(offices.length){const before=rank.value;fillRanks([...new Set(offices)],true);if(rank.value!==before)updateRank();}
-    }).catch(()=>{});
+    fillRanks(RANKS_FALLBACK,false);
+    {const s=document.createElement('script');s.src=RANKS_SOURCE+'?v='+Date.now().toString(36).slice(0,-3);
+      s.onload=()=>{if(window.WSRanks){const before=rank.value;fillRanks(window.WSRanks.names(),true);if(rank.value!==before)updateRank();}};
+      document.head.appendChild(s);}
 
     // ---- Patch numbers ----------------------------------------------------
     // Every patch on the front carries a small number at its top-left, so a
