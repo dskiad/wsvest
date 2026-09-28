@@ -45,7 +45,7 @@
     .vest{position:relative;width:min(690px,76vh,calc(100vw - 430px));aspect-ratio:3/4;filter:drop-shadow(0 28px 32px #000a)}
     .vest>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
     .patch{position:absolute;z-index:3;height:5.4%;width:20.8%;display:flex;align-items:center;justify-content:center;padding:0 4%;overflow:hidden;white-space:nowrap;border:2px solid #e5e8ec;outline:1px solid #686e77;border-radius:4px;background:linear-gradient(#191b1f,#020304 55%,#101215);box-shadow:inset 0 0 0 2px #07080a,inset 0 0 0 3px #aeb4bc,0 3px 6px #000b;color:#eef0f3;text-shadow:0 1px #fff7,0 3px 3px #000;font:bold clamp(8px,1.25vw,17px) Georgia,serif}
-    .rank{left:20.2%;top:34.9%;padding:0 2.6%;line-height:1.02;text-align:center;letter-spacing:.01em}.road{left:20.2%;top:40.35%}.founder{left:20.2%;top:45.8%}.honorary{left:20.2%;top:51.25%;font-size:clamp(7px,1.02vw,14px)}
+    .rank{left:20.2%;top:34.9%;padding:0 2.6%;line-height:1.02;text-align:center;letter-spacing:.01em}.road{left:20.2%;top:40.35%}.founder{left:20.2%;top:45.8%}.honorary{left:20.2%;top:51.25%;padding:0 2.6%;line-height:1.02;text-align:center;letter-spacing:.01em}
     /* Patch numbers -- a reference layer only: never drawn into the JPEG. */
     .pno{position:absolute;z-index:6;transform:translate(-50%,-50%);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#b3121b;color:#fff;border:1px solid #fff;font:800 10px/15px Inter,Arial,sans-serif;text-align:center;box-shadow:0 1px 3px #000c;pointer-events:none}
     .pno.hidden{display:none}
@@ -98,7 +98,7 @@
     <main>
       <header><div><p class="eyebrow">LIVE PREVIEW</p><h2 id="heading">President</h2></div><div class="badge active" id="trimBadge">Silver trim</div></header>
       <div class="stage"><div class="vest">
-        <img id="vestImage" src="vest-silver.png?v=p10" alt="Widows Sons Hellas Chapter leather vest">
+        <img id="vestImage" src="vest-silver.png?v=f2" alt="Widows Sons Hellas Chapter leather vest">
         <div class="size" id="sizeTag">SIZE<strong>XL</strong></div>
         <div class="patch rank" id="rankPatch">PRESIDENT</div>
         <div class="patch road" id="roadPatch">BUILDSMITH</div>
@@ -166,7 +166,7 @@
     // patches are measured where they sit; the ones printed in the photo are
     // fixed points on it (fractions of the vest box).
     const PNO=[
-      {n:1,at:[.203,.268]},                 // national flag
+      {n:1,at:[.1971,.2486]},                 // national flag
       {n:2,el:'rankPatch'},{n:3,el:'roadPatch'},{n:4,el:'founderPatch'},{n:5,el:'honoraryPatch'},
       // n.6, the Chapter roundel, is taken off the vest; its number is kept free
       // so the numbers after it do not move.
@@ -230,12 +230,12 @@
       el.dataset.lines=JSON.stringify(best.lines);el.dataset.sx=best.sx;
       el.style.fontSize=best.size.toFixed(2)+'px';
     }
-    function refitPatches(){fitPatchFont(hp);fitRank(rp,rank.value);matchPatchFonts(fp,rop);stackLeft()}
-    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';fitRank(rp,value);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=p10':'vest-standard.png?v=p10';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
+    function refitPatches(){fitRank(hp,type.value);fitRank(rp,rank.value);matchPatchFonts(fp,rop);stackLeft()}
+    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';fitRank(rp,value);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=f2':'vest-standard.png?v=f2';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary'}fitRank(hp,type.value)}
     rank.addEventListener('change',updateRank);
     road.addEventListener('input',()=>{road.value=road.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,10);rop.textContent=road.value||'ROAD NAME';matchPatchFonts(fp,rop);document.getElementById('count').textContent=road.value.length+'/10'});
-    type.addEventListener('change',()=>{hp.textContent=type.value.toUpperCase();fitPatchFont(hp)});
-    ht.addEventListener('click',()=>{setToggle(ht,hp,'honoraryStatus',hf);stackLeft()});
+    type.addEventListener('change',()=>{fitRank(hp,type.value)});
+    ht.addEventListener('click',()=>{setToggle(ht,hp,'honoraryStatus',hf);fitRank(hp,type.value);stackLeft()});
     ft.addEventListener('click',()=>{setToggle(ft,fp,'founderStatus');fp.classList.contains('hidden')?fitPatchFont(rop):matchPatchFonts(fp,rop);stackLeft()});
     window.addEventListener('resize',refitPatches);
     refitPatches();
