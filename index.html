@@ -231,7 +231,21 @@
       el.style.fontSize=best.size.toFixed(2)+'px';
     }
     function refitPatches(){fitRank(hp,type.value);fitRank(rp,rank.value);matchPatchFonts(fp,rop);stackLeft()}
-    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';fitRank(rp,value);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=f2':'vest-standard.png?v=f2';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary'}fitRank(hp,type.value)}
+    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';fitRank(rp,value);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=f2':'vest-standard.png?v=f2';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);applyGrandMaster(value==='Grand Master');fitRank(hp,type.value)}
+    // A Grand Master is always Most Honorary: the Honorary patch is switched
+    // on, set to MOST HONORARY and held there (it cannot be hidden or changed)
+    // for as long as the office is Grand Master, and it is fitted as large as
+    // GRAND / MASTER above it. Another office releases both controls again.
+    function applyGrandMaster(gm){
+      if(gm){
+        if(!ht.classList.contains('on')){setToggle(ht,hp,'honoraryStatus',hf)}
+        type.value='Most Honorary';
+      }
+      ht.disabled=gm;type.disabled=gm;
+      ht.style.opacity=gm?.55:'';ht.title=gm?'A Grand Master is always Most Honorary':'';
+      document.getElementById('honoraryStatus').textContent=gm?'Most Honorary — set by Grand Master':(ht.classList.contains('on')?'Visible':'Hidden');
+      stackLeft();
+    }
     rank.addEventListener('change',updateRank);
     road.addEventListener('input',()=>{road.value=road.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,10);rop.textContent=road.value||'ROAD NAME';matchPatchFonts(fp,rop);document.getElementById('count').textContent=road.value.length+'/10'});
     type.addEventListener('change',()=>{fitRank(hp,type.value)});
