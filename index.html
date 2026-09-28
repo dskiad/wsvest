@@ -38,7 +38,8 @@
     .dl-option.primary:hover{filter:brightness(1.06)}
     .specs{margin-top:auto;padding:15px;border:1px solid #30343d;border-radius:13px;background:#0b0c0f;display:grid;gap:9px}
     .specs div{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.specs strong{color:#e6e8ec}
-    main{min-width:0;padding:25px 36px;background:radial-gradient(circle at 55% 35%,#262a32,#111318 45%,#08090b 78%)}
+    main{min-width:0;padding:25px 36px;background:linear-gradient(180deg,rgba(8,9,11,.55),rgba(8,9,11,0) 22%,rgba(8,9,11,0) 78%,rgba(8,9,11,.6)),url(garage.jpg?v=g1) center 62%/cover no-repeat #120e0c}
+    main header h2,main header .eyebrow{text-shadow:0 2px 8px #000}
     header{max-width:860px;margin:auto;display:flex;justify-content:space-between;align-items:center}.badge{padding:8px 12px;border:1px solid #3a3f48;border-radius:99px;color:#969da7;background:#101216;font-size:13px}.badge.active{color:#fff;border-color:#b7bdc6;box-shadow:0 0 20px #fff2}
     .stage{min-height:calc(100vh - 90px);display:grid;place-items:center}
     .vest{position:relative;width:min(690px,76vh,calc(100vw - 430px));aspect-ratio:3/4;filter:drop-shadow(0 28px 32px #000a)}
@@ -77,6 +78,7 @@
       <div class="toggle"><div class="toggle-copy"><label>Honorary</label><small id="honoraryStatus">Visible</small></div><button class="switch on" id="honoraryToggle" type="button" role="switch" aria-checked="true" aria-label="Show Honorary patch"></button></div>
       <div class="field subfield" id="honoraryField"><label for="honoraryType">Honorary Type</label><select id="honoraryType"><option>Honorary</option><option>Most Honorary</option></select></div>
       <div class="toggle"><div class="toggle-copy"><label>Founder</label><small id="founderStatus">Visible</small></div><button class="switch on" id="founderToggle" type="button" role="switch" aria-checked="true" aria-label="Show Founder patch"></button></div>
+      <div class="toggle"><div class="toggle-copy"><label>Patch numbers</label><small id="numbersStatus">Visible</small></div><button class="switch on" id="numbersToggle" type="button" role="switch" aria-checked="true" aria-label="Show patch numbers"></button></div>
       <button type="button" class="btn-download" id="downloadBtn">Download JPEG</button>
       <div class="dl-choice hidden" id="dlChoice">
         <p>Download the front only, or the full set?</p>
@@ -88,15 +90,15 @@
         <p>PATCH NUMBERS</p>
         <ol>
           <li>National flag</li><li>Office rank</li><li>Roadname</li><li>Founder</li><li>Honorary</li>
-          <li value="7">Top rocker &mdash; WIDOWS SONS</li><li>Centre oval (small)</li><li>Bottom rocker &mdash; HELLAS CHAPTER</li><li>Size tag</li>
+          <li value="7">Front colours &mdash; WIDOWS SONS &middot; oval &middot; HELLAS CHAPTER</li><li value="10">Size tag</li>
         </ol>
       </div>
-      <div class="specs"><div><span>Flag</span><strong>11 × 6 cm</strong></div><div><span>Name patches</span><strong>11 × 3 cm</strong></div><div><span>Front emblem</span><strong>8.2 × 8.2 cm</strong></div><div><span>Vest size</span><strong>XL · 58 cm</strong></div></div>
+      <div class="specs"><div><span>Flag</span><strong>11 × 6 cm</strong></div><div><span>Name patches</span><strong>11 × 3 cm</strong></div><div><span>Front colours</span><strong>9.5 × 9.5 cm</strong></div><div><span>Vest size</span><strong>XL · 58 cm</strong></div></div>
     </aside>
     <main>
       <header><div><p class="eyebrow">LIVE PREVIEW</p><h2 id="heading">President</h2></div><div class="badge active" id="trimBadge">Silver trim</div></header>
       <div class="stage"><div class="vest">
-        <img id="vestImage" src="vest-silver.png?v=hc1" alt="Widows Sons Chapter Hellas leather vest">
+        <img id="vestImage" src="vest-silver.png?v=g1" alt="Widows Sons Chapter Hellas leather vest">
         <div class="size" id="sizeTag">SIZE<strong>XL</strong></div>
         <div class="patch rank" id="rankPatch">PRESIDENT</div>
         <div class="patch road" id="roadPatch">BUILDSMITH</div>
@@ -126,10 +128,12 @@
         const im=new Image();
         im.onload=()=>{backImgCache=im;resolve(im)};
         im.onerror=reject;
-        im.src='vest-back.png';
+        im.src='vest-back.png?v=g1';
       });
     }
     loadBackImage().catch(()=>{});
+    let garageImg=null;
+    const garageReady=new Promise(res=>{const g=new Image();g.onload=()=>{garageImg=g;res(g)};g.onerror=()=>res(null);g.src='garage.jpg?v=g1'});
 
     // ---- Office Rank list -------------------------------------------------
     // The offices are the Chapter's, not this page's: they are read from the
@@ -169,13 +173,14 @@
       {n:2,el:'rankPatch'},{n:3,el:'roadPatch'},{n:4,el:'founderPatch'},{n:5,el:'honoraryPatch'},
       // n.6, the Chapter roundel, is taken off the vest; its number is kept free
       // so the numbers after it do not move.
-      {n:7,at:[.639,.277]},                 // top rocker (small)
-      {n:8,at:[.654,.318]},                 // centre oval (small)
-      {n:9,at:[.640,.376]},                 // bottom rocker (small)
+      {n:7,at:[.644,.278]},                 // front colours, one patch 9.5 x 9.5 cm
+      // 8 and 9 (the small oval and bottom rocker) are now part of n.7
       {n:10,el:'sizeTag'}
     ];
     const pnoLayer=document.getElementById('patchNumbers');
     PNO.forEach(p=>{const b=document.createElement('span');b.className='pno';b.textContent=p.n;pnoLayer.appendChild(b);p.b=b});
+    const numbersToggle=document.getElementById('numbersToggle');
+    numbersToggle.addEventListener('click',()=>{const on=numbersToggle.classList.toggle('on');numbersToggle.setAttribute('aria-checked',on);pnoLayer.classList.toggle('hidden',!on);document.getElementById('numbersStatus').textContent=on?'Visible':'Hidden'});
     function placeNumbers(){
       const box=document.querySelector('.vest');const W=box.clientWidth,H=box.clientHeight;
       PNO.forEach(p=>{
@@ -201,7 +206,7 @@
     // box depends on that patch's own text length.
     function matchPatchFonts(a,b){fitPatchFont(a);fitPatchFont(b);if(!a.clientWidth||!b.clientWidth)return;const size=Math.min(parseFloat(a.style.fontSize),parseFloat(b.style.fontSize));a.style.fontSize=size+'px';b.style.fontSize=size+'px'}
     function refitPatches(){fitPatchFont(hp);fitPatchFont(rp);matchPatchFonts(fp,rop);stackLeft()}
-    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';rp.textContent=value.toUpperCase();fitPatchFont(rp);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=hc1':'vest-standard.png?v=hc1';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
+    function updateRank(){const value=rank.value,silver=value==='President'||value==='Grand Master';rp.textContent=value.toUpperCase();fitPatchFont(rp);document.getElementById('heading').textContent=value;vest.src=silver?'vest-silver.png?v=g1':'vest-standard.png?v=g1';document.getElementById('silverNote').classList.toggle('hidden',!silver);const badge=document.getElementById('trimBadge');badge.textContent=silver?'Silver trim':'Standard trim';badge.classList.toggle('active',silver);if(value==='Grand Master'){type.value='Most Honorary';hp.textContent='MOST HONORARY'}fitPatchFont(hp)}
     rank.addEventListener('change',updateRank);
     road.addEventListener('input',()=>{road.value=road.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,10);rop.textContent=road.value||'ROAD NAME';matchPatchFonts(fp,rop);document.getElementById('count').textContent=road.value.length+'/10'});
     type.addEventListener('change',()=>{hp.textContent=type.value.toUpperCase();fitPatchFont(hp)});
@@ -238,7 +243,6 @@
       const canvas=document.createElement('canvas');
       canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
       const ctx=canvas.getContext('2d');
-      ctx.fillStyle='#08090b';ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.drawImage(img,0,0,canvas.width,canvas.height);
       function toCanvasRect(el){const r=el.getBoundingClientRect();return{x:(r.left-vestRect.left)*scale,y:(r.top-vestRect.top)*scale,w:r.width*scale,h:r.height*scale}}
       ['rankPatch','roadPatch','honoraryPatch','founderPatch'].forEach(id=>{
@@ -277,15 +281,24 @@
       if(includeBack){
         try{backImg=await loadBackImage()}catch(e){/* export front alone if the back photo can't load */}
       }
-      const gap=Math.round(frontCanvas.height*0.02);
-      const backW=backImg?Math.round(backImg.naturalWidth*(frontCanvas.height/backImg.naturalHeight)):0;
+      await garageReady;
+      const Hf=frontCanvas.height,gap=Math.round(Hf*0.04),side=Math.round(Hf*0.16),padY=Math.round(Hf*0.04);
+      const backW=backImg?Math.round(backImg.naturalWidth*(Hf/backImg.naturalHeight)):0;
       const combined=document.createElement('canvas');
-      combined.width=frontCanvas.width+(backImg?gap+backW:0);
-      combined.height=frontCanvas.height;
+      combined.width=side*2+frontCanvas.width+(backImg?gap+backW:0);
+      combined.height=Hf+padY*2;
       const ctx=combined.getContext('2d');
-      ctx.fillStyle='#08090b';ctx.fillRect(0,0,combined.width,combined.height);
-      ctx.drawImage(frontCanvas,0,0);
-      if(backImg)ctx.drawImage(backImg,frontCanvas.width+gap,0,backW,frontCanvas.height);
+      ctx.fillStyle='#120e0c';ctx.fillRect(0,0,combined.width,combined.height);
+      if(garageImg){
+        // the garage, covering the whole picture
+        const sc=Math.max(combined.width/garageImg.naturalWidth,combined.height/garageImg.naturalHeight);
+        const gw=garageImg.naturalWidth*sc,gh=garageImg.naturalHeight*sc;
+        ctx.drawImage(garageImg,(combined.width-gw)/2,(combined.height-gh)*0.62,gw,gh);
+      }
+      ctx.save();ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=Hf*0.03;ctx.shadowOffsetY=Hf*0.015;
+      ctx.drawImage(frontCanvas,side,padY);
+      if(backImg)ctx.drawImage(backImg,side+frontCanvas.width+gap,padY,backW,Hf);
+      ctx.restore();
       const filename=backImg
         ?`Set-WS-Vest-${slug(road.value)}-${slug(rank.value)}.jpg`
         :`${slug(road.value)}-${slug(rank.value)}.jpg`;
